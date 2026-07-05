@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { UserData, AnalysisResults } from "@/app/page";
 
 type Props = {
@@ -10,11 +9,13 @@ type Props = {
 };
 
 const STAGES = [
-  { section: "saju_chart",    label: "사주",    text: "생년월일시로 8글자를 계산하고\n오행과 살을 찾고 있어요" },
-  { section: "saju_combined", label: "사주 풀이", text: "성격·직업·금전운·건강·연애를\n사주로 깊이 분석하고 있어요" },
-  { section: "zwds_combined", label: "자미두수", text: "자미두수 12궁을 펼쳐\n배우자궁과 인간관계를 읽어요" },
-  { section: "ast_combined",  label: "점성술",  text: "출생 당시 행성 위치로\n연애 시기와 감정 패턴을 봐요" },
-  { section: "integrated",    label: "통합",    text: "세 가지를 하나로 엮어\n보고서를 완성하고 있어요" },
+  { section: "saju_chart",    label: "사주 차트",    text: "생년월일시로 8글자를 계산하고\n오행·살·대운을 뽑아내고 있어요" },
+  { section: "zwds_chart",    label: "자미두수 차트", text: "자미두수 12궁 강도를\n계산하고 있어요" },
+  { section: "ast_chart",     label: "점성술 차트",  text: "출생 당시 행성 위치로\n4원소 분포를 계산하고 있어요" },
+  { section: "saju_combined", label: "사주 풀이",    text: "성격·직업·금전·건강·연애·배우자를\n사주로 깊이 분석하고 있어요" },
+  { section: "zwds_combined", label: "자미두수 풀이", text: "자미두수 12궁을 펼쳐\n배우자궁·관록궁·재백궁을 읽어요" },
+  { section: "ast_combined",  label: "점성술 풀이",  text: "금성·7하우스 기반으로\n연애 시기와 감정 패턴을 봐요" },
+  { section: "integrated",    label: "통합 보고서",  text: "사주·자미두수·점성술을 하나로 엮어\n최종 보고서를 완성하고 있어요" },
 ];
 
 async function fetchSection(section: string, userData: UserData): Promise<string> {
@@ -50,7 +51,6 @@ export default function LoadingScreen({ userData, onDone }: Props) {
 
         setProgress(Math.round(((i + 1) / STAGES.length) * 100));
 
-        // 마지막 단계가 아니면 짧게 대기
         if (i < STAGES.length - 1) {
           await new Promise((r) => setTimeout(r, 300));
         }
@@ -72,12 +72,13 @@ export default function LoadingScreen({ userData, onDone }: Props) {
   return (
     <div className="min-h-screen bg-[#f2f2f7] flex flex-col items-center justify-center px-8">
       <div className="mb-14">
-        <Image src="/logo.png" alt="Yomi" width={100} height={40} className="mx-auto opacity-80" style={{ objectFit: "contain" }} />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.png" alt="Yomi" style={{ width: "100px", display: "block", margin: "0 auto", opacity: 0.8, objectFit: "contain" }} />
       </div>
 
       <div className="mb-5">
         <span className={`text-xs px-3 py-1 rounded-full font-medium transition-all duration-500 ${
-          current.label === "통합"
+          current.label === "통합 보고서"
             ? "bg-[#1c1c1e] text-white"
             : "bg-white border border-[#e5e5ea] text-[#8e8e93]"
         }`}>
@@ -97,19 +98,25 @@ export default function LoadingScreen({ userData, onDone }: Props) {
       </div>
 
       <div className="w-full max-w-xs">
+        <div className="flex justify-between text-xs text-[#8e8e93] mb-2">
+          <span>분석 중</span>
+          <span>{progress}%</span>
+        </div>
         <div className="h-1 bg-[#e5e5ea] rounded-full overflow-hidden">
           <div className="h-full bg-[#1c1c1e] rounded-full transition-all duration-700"
             style={{ width: `${progress}%` }} />
         </div>
-        <div className="flex justify-between mt-2">
+        <div className="flex justify-between mt-3">
           {STAGES.map((s, i) => (
-            <span key={i} className={`text-[10px] transition-colors duration-300 ${i <= stageIndex ? "text-[#1c1c1e] font-medium" : "text-[#c7c7cc]"}`}>
-              {s.label}
-            </span>
+            <div key={i} className="flex flex-col items-center gap-1">
+              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                i < stageIndex ? "bg-[#1c1c1e]" : i === stageIndex ? "bg-[#1c1c1e] ring-2 ring-[#1c1c1e] ring-offset-1" : "bg-[#e5e5ea]"
+              }`} />
+            </div>
           ))}
         </div>
         <p className="text-center text-[#8e8e93] text-xs mt-4">
-          {stageIndex + 1} / {STAGES.length} 분석 중 · 1-2분 소요돼요
+          {stageIndex + 1} / {STAGES.length} 분석 중 · 2-3분 소요돼요
         </p>
       </div>
     </div>

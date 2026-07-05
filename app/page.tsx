@@ -18,10 +18,10 @@ export type UserData = {
   birthplace: string;
   tone: "soft" | "brutal";
   name?: string;
+  manseryeokImage?: string;
 };
 
 export type AnalysisResults = Record<string, string>;
-
 export type AppStep = "onboarding" | "loading" | "report" | "profiles";
 
 export default function Home() {
@@ -68,11 +68,10 @@ export default function Home() {
     setStep("loading");
   };
 
-  if (step === "loading" && userData) {
+  if (step === "loading" && userData)
     return <LoadingScreen userData={userData} onDone={handleLoadingDone} />;
-  }
 
-  if (step === "report" && userData) {
+  if (step === "report" && userData)
     return (
       <ReportScreen
         userData={userData}
@@ -82,9 +81,8 @@ export default function Home() {
         onProfiles={() => setStep("profiles")}
       />
     );
-  }
 
-  if (step === "profiles") {
+  if (step === "profiles")
     return (
       <SavedProfiles
         profiles={savedProfiles}
@@ -93,7 +91,6 @@ export default function Home() {
         onDelete={handleDeleteProfile}
       />
     );
-  }
 
   return (
     <OnboardingScreen
